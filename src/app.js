@@ -1,4 +1,6 @@
 require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
 const { Client, IntentsBitField, Presence } = require('discord.js');
 
 const client = new Client({
@@ -13,12 +15,25 @@ const client = new Client({
 // user aoto reply status (use map later)
 let user = {
     kongling520: {
-        autoReply: false,
+        autoReply: true,
     },
     cynosure_220: {
         autoReply: true,
     },
 }
+
+
+// get current data
+const currentDateTime = new Date().toISOString();
+const formattedDateTime = currentDateTime.slice(0, 19).replace(/:/g, '_');
+
+// Create a log file name with the current date
+const logFileName = `log_${formattedDateTime}.txt`;
+const logFilePath = path.join('./logs', logFileName);
+
+// Create a writable stream to write logs to the file
+const logStream = fs.createWriteStream(logFilePath, { flags: 'a' });
+
 
 client.on('ready', (bot) => {
     console.log('Ready!');
@@ -50,7 +65,10 @@ client.on('messageCreate', (message) => {
         message.reply('在做数学 勿扰！');
     }
 
-    console.log(message.content);
+    // log message to file and console
+    const logMessage = `[${new Date().toISOString()}]${message.author.username}: ${message.content}\n`;
+    logStream.write(logMessage);
+    console.log(message.author.username, message.content);
 });
 
 client.on('interactionCreate', async (interaction) => {
