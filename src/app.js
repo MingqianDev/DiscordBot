@@ -94,7 +94,7 @@ client.on('messageCreate', (message) => {
     }
 
     //轰炸黄猫猫
-    if (message.author.username === "cynosure_220" && user.cynosure_220.replyRacy) {
+    if (message.author.username === "cynosure_220" && userMap.get('cynosure_220').replyRacy) {
         message.reply("黄猫猫");
     }
 
