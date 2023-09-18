@@ -120,31 +120,38 @@ client.on('interactionCreate', async (interaction) => {
     //自动回复黄猫猫开关
     if (interaction.commandName === '黄猫猫') {
         userMap.get('cynosure_220').replyRacy = interaction.options.getBoolean('toggle');
-        interaction.reply(`Auto Reply is now ${userMap.get(interaction.user.username).replyRacy ? 'on' : 'off'}`)
+        interaction.reply(`Auto 黄猫猫 is now ${userMap.get('cynosure_220').replyRacy ? 'on' : 'off'}`)
     }
 
     //weather command
     if (interaction.commandName === 'weather') {
-        if (!interaction.options.getString('city')) {
-            getWeather()
+        let location;
+        // if no city is provided, use default location
+        if (interaction.options.getString('city') == null) {
+            location = { lat: 43.329479, lon: -79.805277 };
+            getWeather.getWeather(location, interaction.options.getString('city'))
                 .then(weatherData => {
                     interaction.reply(weatherData);
                 })
                 .catch(error => {
                     console.error(error);
+                    interaction.reply('Error: ' + error);
                 });
-        } else {
-            getWeather(interaction)
+        } else { //has city provided
+            getWeather.getLocation(interaction.options.getString('city'))
+                .then(location => {
+                    location = { lat: location.lat, lon: location.lon };
+                    return getWeather.getWeather(location, interaction.options.getString('city'));
+                })
                 .then(weatherData => {
                     interaction.reply(weatherData);
                 })
                 .catch(error => {
                     console.error(error);
+                    interaction.reply('Error: ' + error);
+                    return;
                 });
         }
-
-
-
     }
 });
 
