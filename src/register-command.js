@@ -9,7 +9,7 @@ const command = [
     {
         name: 'auto-reply',
         description: 'Toggle Auto Reply',
-        options:[
+        options: [
             {
                 name: 'toggle',
                 description: 'Set the status (on/off) of auto reply',
@@ -21,7 +21,7 @@ const command = [
     {
         name: ' 黄猫猫',
         description: '猫猫每句话后面都有回复黄猫猫',
-        options:[
+        options: [
             {
                 name: 'toggle',
                 description: 'Set the auto reply on/off',
@@ -30,12 +30,28 @@ const command = [
             }
         ]
     },
+    {
+        name: 'weather',
+        description: 'get weather',
+        options: [
+            {
+                name: 'city',
+                description: 'enter your city',
+                type: ApplicationCommandOptionType.String,
+            },
+            {
+                name: 'country',
+                description: 'enter your country(using ISO 3166 Alpha-2 code)',
+                type: ApplicationCommandOptionType.String,
+            }
+        ]
+    },
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
 (async () => {
-    try{
+    try {
         console.log('registering commands...');
 
         await rest.put(

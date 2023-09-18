@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { Client, IntentsBitField, Presence } = require('discord.js');
 const save = require('./save.js');
+const getWeather = require('./getWeather.js');
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -47,7 +48,6 @@ const logStream = fs.createWriteStream(logFilePath, { flags: 'a' });
 
 // Create an event listener to listen for user input
 rl.on('line', (input) => {
-    console.log('readline on');
     //stop server
     if (input.trim() === 'stop') {
         save(userMap);
@@ -121,6 +121,30 @@ client.on('interactionCreate', async (interaction) => {
     if (interaction.commandName === '黄猫猫') {
         userMap.get('cynosure_220').replyRacy = interaction.options.getBoolean('toggle');
         interaction.reply(`Auto Reply is now ${userMap.get(interaction.user.username).replyRacy ? 'on' : 'off'}`)
+    }
+
+    //weather command
+    if (interaction.commandName === 'weather') {
+        if (!interaction.options.getString('city')) {
+            getWeather()
+                .then(weatherData => {
+                    interaction.reply(weatherData);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        } else {
+            getWeather(interaction)
+                .then(weatherData => {
+                    interaction.reply(weatherData);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+
+
     }
 });
 
