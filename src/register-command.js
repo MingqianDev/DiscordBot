@@ -18,10 +18,18 @@ const command = [
             }
         ]
     },
-    // {
-    //     name: 'hi',
-    //     description: 'Replies with hey',
-    // },
+    {
+        name: ' 黄猫猫',
+        description: '猫猫每句话后面都有回复黄猫猫',
+        options:[
+            {
+                name: 'toggle',
+                description: 'Set the auto reply on/off',
+                type: ApplicationCommandOptionType.Boolean,
+                required: true,
+            }
+        ]
+    },
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
