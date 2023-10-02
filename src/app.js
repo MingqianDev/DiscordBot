@@ -73,25 +73,40 @@ client.on('messageCreate', (message) => {
         message.reply('pong');
     }
 
-    // kongling520 auto reply
-    const kongling520 = message.guild.members.cache.get('974275277351976990'); // 获取特定用户的成员对象
-    if (message.mentions.has('974275277351976990') &&
-        !message.author.bot &&
-        kongling520.presence?.status === 'dnd' &&
-        userMap.get('kongling520').autoReply
-    ) {
-        message.channel.send('coding中 勿扰');
+    if (!(message.mentions.users.size === 0)) {
+        for (const [key, value] of message.mentions.users) {
+            const userStatus = message.guild.members.cache.get(key);
+
+            if (message.mentions.has(key) &&
+                !message.author.bot &&
+                userStatus.presence?.status === 'dnd' &&
+                userMap.has(value.username) &&
+                userMap.get(value.username).autoReply
+            ) {
+                message.reply(userMap.get(value.username).replyMessage);
+            }
+        }
     }
 
-    // cynosure auto reply
-    const cynosure = message.guild.members.cache.get('866394271036866612');
-    if (message.mentions.has('866394271036866612') &&
-        !message.author.bot &&
-        cynosure.presence?.status === 'dnd' &&
-        userMap.get('cynosure_220').autoReply
-    ) {
-        message.reply('在做数学 勿扰！');
-    }
+    // // kongling520 auto reply
+    // const kongling520 = message.guild.members.cache.get('974275277351976990'); // 获取特定用户的成员对象
+    // if (message.mentions.has('974275277351976990') &&
+    //     !message.author.bot &&
+    //     kongling520.presence?.status === 'dnd' &&
+    //     userMap.get('kongling520').autoReply
+    // ) {
+    //     message.reply(userMap.get('kongling520').replyMessage);
+    // }
+
+    // // cynosure auto reply
+    // const cynosure = message.guild.members.cache.get('866394271036866612');
+    // if (message.mentions.has('866394271036866612') &&
+    //     !message.author.bot &&
+    //     cynosure.presence?.status === 'dnd' &&
+    //     userMap.get('cynosure_220').autoReply
+    // ) {
+    //     message.reply(userMap.get('cynosure_220').replyMessage);
+    // }
 
     //轰炸黄猫猫
     if (message.author.username === "cynosure_220" && userMap.get('cynosure_220').replyRacy) {
@@ -101,20 +116,49 @@ client.on('messageCreate', (message) => {
     // log message to file and console
     const logMessage = `[${new Date().toISOString()}]${message.author.username}: ${message.content}\n`;
     logStream.write(logMessage);
+
     console.log(message.author.username, message.content);
+    // console.log(message.mentions.users.get('974275277351976990'));
+    // console.log();
 });
 
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
+
     if (interaction.commandName === 'ping') {
         interaction.reply('pong');
     }
 
-    //change auto reply status
-    if (interaction.commandName === 'auto-reply') {
+    //auto reply toggle
+    if (interaction.commandName === 'auto-reply'
+        &&
+        interaction.options._hoistedOptions[0].name === 'toggle'
+    ) {
         userMap.get(interaction.user.username).autoReply = interaction.options.getBoolean('toggle');
         interaction.reply(`Auto Reply is now ${userMap.get(interaction.user.username).autoReply ? 'on' : 'off'}`)
+    }
+
+    //modify auto reply message
+    if (interaction.commandName === 'auto-reply'
+        &&
+        interaction.options._hoistedOptions[0].name === 'modify'
+    ) {
+        if (userMap.has(interaction.user.username)) {
+            const temp = userMap.get(interaction.user.username);
+            temp.replyMessage = interaction.options._hoistedOptions[0].value;
+            interaction.reply(`Auto Reply Message is now '${temp.replyMessage}'`);
+            // interaction.reply(userMap.get(interaction.user.username).replyMessage);
+            return;
+        } else { 
+            // add user to map and modify reply message
+            userMap.set(interaction.user.username, {
+                id: interaction.user.id,
+                autoReply: true,
+                replyMessage: interaction.options._hoistedOptions[0].value,
+            });
+            interaction.reply(`Successfuly added user`);
+        }
     }
 
     //自动回复黄猫猫开关

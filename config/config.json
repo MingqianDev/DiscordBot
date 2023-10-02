@@ -1,1 +1,18 @@
-[["kongling520",{"autoReply":false}],["cynosure_220",{"autoReply":false,"replyRacy":false}]]
+[
+    [
+        "cynosure_220",
+        {
+            "autoReply": false,
+            "replyRacy": false,
+            "replyMessage": "喜欢Luciano中 勿扰"
+        }
+    ],
+    [
+        "kongling520",
+        {
+            "id": "974275277351976990",
+            "autoReply": true,
+            "replyMessage": "coding中！勿扰"
+        }
+    ]
+]

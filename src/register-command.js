@@ -11,11 +11,29 @@ const command = [
         description: 'Toggle Auto Reply',
         options: [
             {
-                name: 'toggle',
-                description: 'Set the status (on/off) of auto reply',
-                type: ApplicationCommandOptionType.Boolean,
-                required: true,
+                name: 'option',
+                description: 'Choose an action to perform',
+                type: ApplicationCommandOptionType.Subcommand,
+                options: [
+                    {
+                        name: 'modify',
+                        description: 'Add or modify an auto-reply message',
+                        type: ApplicationCommandOptionType.String,
+                    },
+                    {
+                        name: 'toggle',
+                        description: 'Set the status (on/off) of auto reply',
+                        type: ApplicationCommandOptionType.Boolean,
+                    }
+                ]
             }
+
+            // {
+            //     name: 'toggle',
+            //     description: 'Set the status (on/off) of auto reply',
+            //     type: ApplicationCommandOptionType.Boolean,
+            //     required: true,
+            // }
         ]
     },
     {
