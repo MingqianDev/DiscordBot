@@ -2,9 +2,11 @@ require('dotenv').config();
 const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
+const cron = require('cron');
 const { Client, IntentsBitField, Presence } = require('discord.js');
 const save = require('./save.js');
 const getWeather = require('./getWeather.js');
+const getCatImage = require('./getCatImage.js');
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -19,17 +21,6 @@ const client = new Client({
         IntentsBitField.Flags.GuildPresences,
     ]
 });
-
-// user aoto reply status (use map later)
-// let user = {
-//     kongling520: {
-//         autoReply: true,
-//     },
-//     cynosure_220: {
-//         autoReply: false,
-//         replyRacy: true,//自动回复黄猫猫
-//     },
-// }
 
 // read config file
 const rawData = fs.readFileSync('./config/config.json');
@@ -73,8 +64,11 @@ client.on('messageCreate', (message) => {
         message.reply('pong');
     }
 
+    //if has mentions
     if (!(message.mentions.users.size === 0)) {
+        //traversal Hashmap and reply message
         for (const [key, value] of message.mentions.users) {
+            //for getting user status
             const userStatus = message.guild.members.cache.get(key);
 
             if (message.mentions.has(key) &&
@@ -88,25 +82,9 @@ client.on('messageCreate', (message) => {
         }
     }
 
-    // // kongling520 auto reply
-    // const kongling520 = message.guild.members.cache.get('974275277351976990'); // 获取特定用户的成员对象
-    // if (message.mentions.has('974275277351976990') &&
-    //     !message.author.bot &&
-    //     kongling520.presence?.status === 'dnd' &&
-    //     userMap.get('kongling520').autoReply
-    // ) {
-    //     message.reply(userMap.get('kongling520').replyMessage);
-    // }
-
-    // // cynosure auto reply
-    // const cynosure = message.guild.members.cache.get('866394271036866612');
-    // if (message.mentions.has('866394271036866612') &&
-    //     !message.author.bot &&
-    //     cynosure.presence?.status === 'dnd' &&
-    //     userMap.get('cynosure_220').autoReply
-    // ) {
-    //     message.reply(userMap.get('cynosure_220').replyMessage);
-    // }
+    if (message.mentions.has('1138147896160682135')) {
+        message.reply('宕机中(_　_)。゜zｚＺ')
+    }
 
     //轰炸黄猫猫
     if (message.author.username === "cynosure_220" && userMap.get('cynosure_220').replyRacy) {
@@ -119,7 +97,7 @@ client.on('messageCreate', (message) => {
 
     console.log(message.author.username, message.content);
     // console.log(message.mentions.users.get('974275277351976990'));
-    // console.log();
+    // console.log(message);
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -150,7 +128,7 @@ client.on('interactionCreate', async (interaction) => {
             interaction.reply(`Auto Reply Message is now '${temp.replyMessage}'`);
             // interaction.reply(userMap.get(interaction.user.username).replyMessage);
             return;
-        } else { 
+        } else {
             // add user to map and modify reply message
             userMap.set(interaction.user.username, {
                 id: interaction.user.id,
@@ -199,4 +177,19 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
+//create a scheduled message
+let scheduledMessage = new cron.CronJob('00 00 08 * * *', () => {
+    let channel = client.channels.cache.get(process.env.CHATTING_CHANNEL_ID);
+    getCatImage.main()
+        .then(catImg => {
+            channel.send(catImg);
+            channel.send("每日猫猫 (ﾐㅇ ω ㅇﾐ)");
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+});
+
+scheduledMessage.start();
 client.login(process.env.DISCORD_TOKEN);
