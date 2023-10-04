@@ -14,11 +14,11 @@
 
 ## Commands
 
-###auto-reply Command
+### auto-reply Command
 
 Set up an Auto Reply when you status is dnd, use the following command:
 
-`/auto-reply modify <message>
+`/auto-reply modify <message>   
 /auto-reply toggle <true/false>`
 
 - `<message>`: The auto reply message content
